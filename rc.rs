@@ -1,16 +1,34 @@
 use std::cell::RefCell;
 
-fn inc(counter: &RefCell<u8>) {
-    *counter.borrow_mut() += 1;
+struct Assets<'a> {
+    count: u64,
+    total: &'a RefCell<i64>,
 }
 
-fn dec(counter: &RefCell<u8>) {
-    *counter.borrow_mut() -= 1;
+struct Debits<'a> {
+    count: u64,
+    total: &'a RefCell<i64>,
+}
+
+impl Assets<'_> {
+    fn acquire(&mut self) {
+        *self.total.borrow_mut() += 1;
+        self.count += 1;
+    }
+}
+
+impl Debits<'_> {
+    fn loan(&mut self) {
+        *self.total.borrow_mut() -= 1;
+        self.count += 1;
+    }
 }
 
 fn main() {
     let counter = RefCell::new(0);
-    inc(&counter);
-    dec(&counter);
+    let mut debits = Debits { count: 0, total: &counter };
+    let mut assets = Assets { count: 0, total: &counter };
+    assets.acquire();
+    debits.loan();
     println!("{}", *counter.borrow());
 }
