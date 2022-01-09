@@ -1,17 +1,16 @@
 use std::cell::RefCell;
 
-static COUNTER: RefCell<u8> = RefCell::new(0);
-
-fn inc() {
-    *COUNTER.borrow_mut() += 1;
+fn inc(counter: &RefCell<u8>) {
+    *counter.borrow_mut() += 1;
 }
 
-fn dec() {
-    *COUNTER.borrow_mut() -= 1;
+fn dec(counter: &RefCell<u8>) {
+    *counter.borrow_mut() -= 1;
 }
 
 fn main() {
-    inc();
-    dec();
-    println!("{}", *COUNTER.borrow());
+    let counter = RefCell::new(0);
+    inc(&counter);
+    dec(&counter);
+    println!("{}", *counter.borrow());
 }
