@@ -1,23 +1,24 @@
+use std::rc::Rc;
 use std::cell::RefCell;
 
-struct Assets<'a> {
+struct Assets {
     count: u64,
-    total: &'a RefCell<i64>,
+    total: Rc<RefCell<i64>>,
 }
 
-struct Debits<'a> {
+struct Debits {
     count: u64,
-    total: &'a RefCell<i64>,
+    total: Rc<RefCell<i64>>,
 }
 
-impl Assets<'_> {
+impl Assets {
     fn acquire(&mut self) {
         *self.total.borrow_mut() += 1;
         self.count += 1;
     }
 }
 
-impl Debits<'_> {
+impl Debits {
     fn loan(&mut self) {
         *self.total.borrow_mut() -= 1;
         self.count += 1;
@@ -25,9 +26,9 @@ impl Debits<'_> {
 }
 
 fn main() {
-    let counter = RefCell::new(0);
-    let mut debits = Debits { count: 0, total: &counter };
-    let mut assets = Assets { count: 0, total: &counter };
+    let counter = Rc::new(RefCell::new(0));
+    let mut debits = Debits { count: 0, total: Rc::clone(&counter) };
+    let mut assets = Assets { count: 0, total: Rc::clone(&counter) };
     assets.acquire();
     debits.loan();
     println!("{}", *counter.borrow());
